@@ -12,11 +12,19 @@ project(demo-plugins)
 set(CMAKE_BUILD_TYPE Release) # Debug, Release, RelWithDebInfo or MinSizeRel
 
 ### AR2GEMS SETTINGS ###################################################
-set(AR2GEMS_DIR "c:/code-dev/ar2gems/")
+set(AR2GEMS_DIR "c:/code-dev/ar2gems/ar2gems")
+set(AR2GEMS_BUILD_DIR "c:/code-dev/ar2gems/ar2gems-msvc11-x64")
+set(AR2GEMS_RELEASE_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Release)
+set(AR2GEMS_DEBUG_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Debug)
+
+#Could first check is the env. variable AR2GEMS_PLUGINS_DIR is set
+set(AR2GEMS_RELEASE_PLUGINS_DIR c:/code-dev/ar2gems/ar2gems-msvc11-x64/lib/Release/plugins/Geostat)
+set(AR2GEMS_DEBUG_PLUGINS_DIR c:/code-dev/ar2gems/ar2gems-msvc11-x64/lib/Debug/plugins/Geostat)
+
 
 ### Enabling Boost ###################################################
 #FIND_PACKAGE( Boost REQUIRED )
-set(BOOST_ROOT "c:/code-dev/boost_1_48_0")
+set(BOOST_ROOT "c:/code-dev/boost_1_52_0")
 # Uncomment if Boost isn't in your path:
 set(Boost_NO_SYSTEM_PATHS TRUE)
 FIND_PACKAGE( BOOST REQUIRED )
@@ -90,17 +98,18 @@ include_directories(${AR2GEMS_DIR}/ar2GsTL)
 # The convention is to prefix the subdirectory (e.g. utils/foo.h) when
 # referring to headers.
 include_directories(${AR2GEMS_DIR}/ar2gems)
+include_directories(${AR2GEMS_BUILD_DIR}/ar2gems)
+
 
 ### UI files in binary directory #####################################
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if ( MSVC )
 	#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${AR2GEMS_DIR}/lib/x64/release/plugins/Geostat )
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_DIR}/lib/x64/debug/plugins/Geostat )
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_DIR}/lib/x64/release/plugins/Geostat )
-	#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${AR2GEMS_DIR}/lib/x64/release/plugins/Geostat )
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_DIR}/lib/x64/debug/plugins/Geostat )
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_DIR}/lib/x64/release/plugins/Geostat )	
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_PLUGINS_DIR}/lib/x64/debug/plugins/Geostat )
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_PLUGINS_DIR}/lib/x64/release/plugins/Geostat )
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_PLUGINS_DIR}/lib/x64/debug/plugins/Geostat )
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_PLUGINS_DIR}/lib/x64/release/plugins/Geostat )	
 
   #  set_target_properties( ${targetname} PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY ${AR2GEMS_DIR}/lib/x64/release/plugins/geostat )
   #  set_target_properties( ${targetname} PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_DIR}/lib/x64/debug/plugins/geostat )
@@ -117,24 +126,25 @@ foreach(dir ${PROJ_DIRS})
   add_subdirectory(${dir})
 endforeach()
 
-
+# Should have a flag to see of these library are needed or not
+# such that the user could select them in cmake-gui
 set(AR2GEMS_LIB_RELEASE 
-	${AR2GEMS_DIR}/lib/x64/release/ar2gems_appli.lib
-	${AR2GEMS_DIR}/lib/x64/release/ar2gems_grid.lib
-	${AR2GEMS_DIR}/lib/x64/release/ar2gems_math.lib
-	${AR2GEMS_DIR}/lib/x64/release/ar2gems_widgets.lib
-	${AR2GEMS_DIR}/lib/x64/release/ar2gems_utils.lib
-	${AR2GEMS_DIR}/lib/x64/release/ar2gems_charts.lib
-	${AR2GEMS_DIR}/lib/x64/release/ar2gems_geostat.lib
+	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_appli.lib
+	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_grid.lib
+	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_math.lib
+	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_widgets.lib
+	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_utils.lib
+	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_charts.lib
+	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_geostat.lib
 )
 set(AR2GEMS_LIB_DEBUG 
-	${AR2GEMS_DIR}/lib/x64/debug/ar2gems_appli.lib
-	${AR2GEMS_DIR}/lib/x64/debug/ar2gems_grid.lib
-	${AR2GEMS_DIR}/lib/x64/debug/ar2gems_math.lib
-	${AR2GEMS_DIR}/lib/x64/debug/ar2gems_widgets.lib
-	${AR2GEMS_DIR}/lib/x64/debug/ar2gems_utils.lib
-	${AR2GEMS_DIR}/lib/x64/debug/ar2gems_charts.lib
-	${AR2GEMS_DIR}/lib/x64/debug/ar2gems_geostat.lib
+	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_appli.lib
+	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_grid.lib
+	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_math.lib
+	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_widgets.lib
+	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_utils.lib
+	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_charts.lib
+	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_geostat.lib
 )
 
 
