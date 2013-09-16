@@ -10,10 +10,20 @@ project(demo-plugins)
 ######################################################################
 
 set(CMAKE_BUILD_TYPE Release) # Debug, Release, RelWithDebInfo or MinSizeRel
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
+find_package(AR2GEMS REQUIRED)
+FindAR2GEMS()
+     
 ### AR2GEMS SETTINGS ###################################################
-set(AR2GEMS_DIR "c:/code-dev/ar2gems/ar2gems")
-set(AR2GEMS_BUILD_DIR "c:/code-dev/ar2gems/ar2gems-msvc11-x64")
+#set(AR2GEMS_DIR "c:/code-dev/ar2gems/ar2gems")
+#set(AR2GEMS_BUILD_DIR "c:/code-dev/ar2gems/ar2gems-msvc11-x64")
+
+
+#if (AR2GEMS_FOUND)
+    #include_directories(${AR2GEMS_INCLUDE_PATH})
+#endif (AR2GEMS_FOUND)
+
 set(AR2GEMS_RELEASE_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Release)
 set(AR2GEMS_DEBUG_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Debug)
 
@@ -23,11 +33,11 @@ set(AR2GEMS_DEBUG_PLUGINS_DIR c:/code-dev/ar2gems/ar2gems-msvc11-x64/lib/Debug/p
 
 
 ### Enabling Boost ###################################################
-#FIND_PACKAGE( Boost REQUIRED )
-set(BOOST_ROOT "c:/code-dev/boost_1_52_0")
+FIND_PACKAGE( Boost REQUIRED )
+#set(BOOST_ROOT "c:/code-dev/boost_1_52_0")
 # Uncomment if Boost isn't in your path:
 set(Boost_NO_SYSTEM_PATHS TRUE)
-FIND_PACKAGE( BOOST REQUIRED )
+FIND_PACKAGE( Boost REQUIRED )
 if(Boost_FOUND)
   message(STATUS "Boost found in ${BOOST_ROOT}")
   include_directories(${Boost_INCLUDE_DIRS})
