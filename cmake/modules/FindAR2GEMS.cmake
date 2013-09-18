@@ -1,5 +1,5 @@
 # This module will first look into the directories defined by the variables:
-# - AR2GEMS_PATH, AR2GEMS_INCLUDE_PATH, AR2GEMS_LIBRARY_PATH
+# - AR2GEMS_PATH
 
 # AR2GEMS_FOUND - System has AR2GEMS
 # AR2GEMS_INCLUDE_DIRS - The AR2GEMS include directories
@@ -14,8 +14,25 @@ set (AR2GEMSFIND_DEBUG TRUE)  # print debug info
 
 set (AR2GEMS_ALL_LIBS_FOUND TRUE) # internal flag to check if all required libs are found, if atleast one missing this flag set to FALSE
 
+if (NOT AR2GEMS_PATH)
+    GET_FILENAME_COMPONENT(AR2GEMS_PATH "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SGeMS-ar2Tech-beta-x64;Path]"
+                           ABSOLUTE CACHE)
+endif()
+
+if (APPLE)
+	# ???
+	SET(CMAKE_FIND_LIBRARY_PREFIXES "lib")
+	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
+elseif (UNIX)
+	SET(CMAKE_FIND_LIBRARY_PREFIXES "lib")
+	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
+elseif (WIN32)
+	SET(CMAKE_FIND_LIBRARY_PREFIXES "")
+	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
+endif (APPLE)
+
 set(LIB_NAMES
-ar2gems_actions 
+ar2gems_actions
 ar2gems_appli
 ar2gems_charts
 ar2gems_extragui
@@ -30,8 +47,7 @@ ar2gems_widgets
 )
 
 set(LIB_SEARCH_PATHES
-${AR2GEMS_LIBRARY_PATH}
-${AR2GEMS_PATH}/lib/
+${AR2GEMS_PATH}
 /usr/lib64
 /usr/lib
 /usr/local/lib64
@@ -41,7 +57,6 @@ ${AR2GEMS_PATH}/lib/
 )
 
 set(HEADER_SEARCH_PATHES
-${AR2GEMS_INCLUDE_PATH}
 ${AR2GEMS_PATH}/include/
 /usr/include
 /usr/local/include
@@ -49,27 +64,32 @@ ${AR2GEMS_PATH}/include/
 /opt/local/include
 )
     
+        
 MACRO(FindAR2GEMS)
     if (AR2GEMSFIND_DEBUG)
-        if (AR2GEMS_PATH)
-            message(STATUS "AR2GEMS path explicitly specified: ${AR2GEMS_PATH}")
-        endif()
-        if (AR2GEMS_INCLUDE_PATH)
-            message(STATUS "AR2GEMS INCLUDE_PATH explicitly specified: ${AR2GEMS_INCLUDE_PATH}")
-        endif()
-        if (AR2GEMS_LIBRARY_PATH)
-            message(STATUS "AR2GEMS LIBRARY_PATH explicitly specified: ${AR2GEMS_LIBRARY_PATH}")
-        endif()
+        message(STATUS "AR2GEMS path: ${AR2GEMS_PATH}")
     endif ()
     
-    find_path(AR2GEMS_INCLUDES ar2gems/sgems_version.h
+    find_path(AR2GEMS_INCLUDE_DIR ar2gems/sgems_version.h
         ${HEADER_SEARCH_PATHES}
         DOC "The directory where ar2gems/sgems_version.h resides")
-        
+    list(APPEND AR2GEMS_INCLUDE_DIRS ${AR2GEMS_INCLUDE_DIR})
+    
+    #message("${HEADER_SEARCH_PATHES}")
+    #find_path(AR2GEMS_INCLUDE_DIR GsTL/cdf.h
+        #${HEADER_SEARCH_PATHES}
+        #DOC "The directory where GsTL/cdf/cdf_basics.h resides")
+    #message("${AR2GEMS_INCLUDE_DIR}")        
+    #list(APPEND AR2GEMS_INCLUDE_DIRS ${AR2GEMS_INCLUDE_DIR})
+                  
+    if (AR2GEMSFIND_DEBUG)
+        message("includes: ${AR2GEMS_INCLUDE_DIRS}")
+    endif(AR2GEMSFIND_DEBUG)
+                        
     foreach(LIB ${LIB_NAMES})
         find_library(FOUND_${LIB} ${LIB} PATHS ${LIB_SEARCH_PATHES})
         if (AR2GEMSFIND_DEBUG)
-            message("Found Lib: ${FOUND_${LIB}}")
+            message("Lib: ${FOUND_${LIB}}")
             list(APPEND AR2GEMS_LIBRARIES ${FOUND_${LIB}})
         endif(AR2GEMSFIND_DEBUG)
         
@@ -79,11 +99,11 @@ MACRO(FindAR2GEMS)
         endif (${LIB}-NOTFOUND)
     endforeach()  
     
-    if(AR2GEMS_INCLUDES AND AR2GEMS_LIBRARIES AND AR2GEMS_ALL_LIBS_FOUND)
+    if(AR2GEMS_INCLUDE_DIRS AND AR2GEMS_LIBRARIES AND AR2GEMS_ALL_LIBS_FOUND)
         set(AR2GEMS_FOUND TRUE)
         if(AR2GEMSFIND_DEBUG)
             message(STATUS "Found AR2GEMS library ${AR2GEMS_LIBRARIES}")
-            message(STATUS "Found AR2GEMS includes ${AR2GEMS_INCLUDES}")
+            message(STATUS "Found AR2GEMS includes ${AR2GEMS_INCLUDE_DIRS}")
         endif(AR2GEMSFIND_DEBUG)
     else()
         set(AR2GEMS_FOUND FALSE)

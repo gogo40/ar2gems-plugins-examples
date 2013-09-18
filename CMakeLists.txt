@@ -2,27 +2,66 @@ cmake_minimum_required(VERSION 2.8)
 
 project(demo-plugins)
 
-
-
 ######################################################################
 # Please set the variables with your preferences. The defaults should
 # work out of the box.
 ######################################################################
 
+set(ALLOW_BUILD_PACKAGE 1)
+
+# SET RELEVANT VARS FOR PACKAGE
+if (ALLOW_BUILD_PACKAGE)
+	if (APPLE)
+	elseif (UNIX)
+	    SET(PACKAGE_TYPE "DEB")    # DEB or RPM
+	endif (APPLE)
+	
+	SET(PACKAGE_MAINTAINER "Alex Santo <asanto@stereoofusion.com>")
+	#SET(PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/about.txt")
+	#SET(PACKAGE_LICENSE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE-ar2tech.txt")
+	    
+	SET(PACKAGE_VERSION_MAJOR "1")
+	SET(PACKAGE_VERSION_MINOR "0")
+	SET(PACKAGE_VERSION_PATCH "0")
+	    
+	SET(PACKAGE_SYSTEM_NAME "amd64")
+endif (ALLOW_BUILD_PACKAGE)
+
+if (APPLE)
+     # ...
+elseif (UNIX)
+    set(INSTALL_DIR_BIN "/usr/bin")
+    set(INSTALL_DIR_LIB "/usr/lib")
+elseif (WIN32)
+    SET(INSTALL_DIR_BIN "../plugin_package")
+    SET(INSTALL_DIR_LIB "../plugin_package")
+endif (APPLE)
+
+
 set(CMAKE_BUILD_TYPE Release) # Debug, Release, RelWithDebInfo or MinSizeRel
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
+#set(AR2GEMS_PATH "C:/SGeMS-ar2tech-x64")
+#set(AR2GEMS_INCLUDE_PATH "D:/workspace/ar2gems")
+#set(AR2GEMS_LIBRARY_PATH "C:/SGeMS-ar2tech-x64/")
+
 find_package(AR2GEMS REQUIRED)
 FindAR2GEMS()
+
+if (AR2GEMS_FOUND)
+	#foreach(dir ${AR2GEMS_INCLUDE_DIRS})
+		include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2gems)
+		include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2GsTL)
+    #endforeach()
+endif (AR2GEMS_FOUND)
+  
+include_directories()
      
 ### AR2GEMS SETTINGS ###################################################
+set(AR2GEMS_DIR ${AR2GEMS_DIR})
 #set(AR2GEMS_DIR "c:/code-dev/ar2gems/ar2gems")
 #set(AR2GEMS_BUILD_DIR "c:/code-dev/ar2gems/ar2gems-msvc11-x64")
 
-
-#if (AR2GEMS_FOUND)
-    #include_directories(${AR2GEMS_INCLUDE_PATH})
-#endif (AR2GEMS_FOUND)
 
 set(AR2GEMS_RELEASE_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Release)
 set(AR2GEMS_DEBUG_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Debug)
@@ -33,8 +72,8 @@ set(AR2GEMS_DEBUG_PLUGINS_DIR c:/code-dev/ar2gems/ar2gems-msvc11-x64/lib/Debug/p
 
 
 ### Enabling Boost ###################################################
-FIND_PACKAGE( Boost REQUIRED )
-#set(BOOST_ROOT "c:/code-dev/boost_1_52_0")
+set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010")
+FIND_PACKAGE(Boost REQUIRED )
 # Uncomment if Boost isn't in your path:
 set(Boost_NO_SYSTEM_PATHS TRUE)
 FIND_PACKAGE( Boost REQUIRED )
@@ -186,6 +225,9 @@ add_library(plugins_demo
 #  ${plugins_demo_FORMS}
 )
 
+INSTALL(TARGETS plugins_demo DESTINATION "${INSTALL_DIR_LIB}")
+
+
 target_link_libraries(plugins_demo
   ${QT_LIBRARIES}
   ${VTK_LIBRARIES}
@@ -201,8 +243,55 @@ target_link_libraries(plugins_demo
 
 source_group(Qt FILES ${plugins_demo_MOC} )
 
-
-
 if (WIN32)
   add_definitions(-DPLUGINS_DEMO_EXPORT)
 endif()
+
+
+
+
+   
+# CREATE PACKAGE    
+if (ALLOW_BUILD_PACKAGE)
+    # COMMON    
+    SET(CPACK_DEBIAN_PACKAGE_MAINTAINER ${PACKAGE_MAINTAINER})
+    
+    SET(CPACK_PACKAGE_DESCRIPTION_FILE ${PACKAGE_DESCRIPTION_FILE})
+    SET(CPACK_RESOURCE_FILE_LICENSE ${PACKAGE_LICENSE_FILE})
+    
+    SET(CPACK_PACKAGE_VERSION_MAJOR ${PACKAGE_VERSION_MAJOR})
+    SET(CPACK_PACKAGE_VERSION_MINOR ${PACKAGE_VERSION_MINOR})
+    SET(CPACK_PACKAGE_VERSION_PATCH ${PACKAGE_VERSION_PATCH})
+    
+    SET(CPACK_SYSTEM_NAME ${PACKAGE_SYSTEM_NAME})
+        	                          
+	if (APPLE)
+	    # ...
+	elseif (UNIX)
+	    ## DEB SPECIFIC
+	    #if (PACKAGE_TYPE STREQUAL "DEB")
+	        #SET(CPACK_GENERATOR "DEB")
+	        #SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # autogenerate dependency information (package d-shlibs should be installed)
+	        #SET(CPACK_DEBIAN_PACKAGE_DEPENDS "vtk (>= 6.1), libboost-system1.49.0 (>= 1.49.0)")
+	    #endif (PACKAGE_TYPE STREQUAL "DEB")
+	    
+	    ## RPM SPECIFIC
+	    #if (PACKAGE_TYPE STREQUAL "RPM")
+	        #SET(CPACK_GENERATOR "RPM")
+	    
+	    #endif(PACKAGE_TYPE STREQUAL "RPM")
+	              
+	elseif (WIN32)
+		set(CPACK_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+	    set(CPACK_GENERATOR "NSIS")
+	    
+		set(CPACK_PACKAGE_FILE_NAME "plugin")
+		set(CPACK_NSIS_INSTALLER_OUTFILE_NAME ${CPACK_PACKAGE_FILE_NAME})
+    	     
+	endif (APPLE)
+    
+    INCLUDE(CPack)
+        	
+endif (ALLOW_BUILD_PACKAGE)
+  
+  
