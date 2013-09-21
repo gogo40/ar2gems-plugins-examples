@@ -16,7 +16,7 @@ set (AR2GEMS_ALL_LIBS_FOUND TRUE) # internal flag to check if all required libs 
 
 if (NOT AR2GEMS_PATH)
     GET_FILENAME_COMPONENT(AR2GEMS_PATH "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SGeMS-ar2Tech-beta-x64;Path]"
-                           ABSOLUTE CACHE)
+        ABSOLUTE CACHE)
 endif()
 
 if (APPLE)

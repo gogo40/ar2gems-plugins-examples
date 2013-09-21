@@ -8,6 +8,8 @@ project(demo-plugins)
 ######################################################################
 
 set(ALLOW_BUILD_PACKAGE 1)
+set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010")
+set(VTK_DIR "D:/workspace/VTK-master/build")
 
 # SET RELEVANT VARS FOR PACKAGE
 if (ALLOW_BUILD_PACKAGE)
@@ -30,49 +32,29 @@ endif (ALLOW_BUILD_PACKAGE)
 if (APPLE)
      # ...
 elseif (UNIX)
-    set(INSTALL_DIR_BIN "/usr/bin")
-    set(INSTALL_DIR_LIB "/usr/lib")
+    set(INSTALL_LIB_DIR "/usr/lib")
 elseif (WIN32)
-    SET(INSTALL_DIR_BIN "../plugin_package")
-    SET(INSTALL_DIR_LIB "../plugin_package")
+    SET(INSTALL_LIB_DIR "../../../../bin") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
+    SET(PACKAGEL_LIB_DIR "../../../bin") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
 endif (APPLE)
 
 
 set(CMAKE_BUILD_TYPE Release) # Debug, Release, RelWithDebInfo or MinSizeRel
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
-#set(AR2GEMS_PATH "C:/SGeMS-ar2tech-x64")
-#set(AR2GEMS_INCLUDE_PATH "D:/workspace/ar2gems")
-#set(AR2GEMS_LIBRARY_PATH "C:/SGeMS-ar2tech-x64/")
-
+set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64") # if not set then search in registry is enabled
 find_package(AR2GEMS REQUIRED)
 FindAR2GEMS()
-
 if (AR2GEMS_FOUND)
-	#foreach(dir ${AR2GEMS_INCLUDE_DIRS})
-		include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2gems)
-		include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2GsTL)
-    #endforeach()
+	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2gems)
+	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2GsTL)
 endif (AR2GEMS_FOUND)
   
 include_directories()
      
-### AR2GEMS SETTINGS ###################################################
-set(AR2GEMS_DIR ${AR2GEMS_DIR})
-#set(AR2GEMS_DIR "c:/code-dev/ar2gems/ar2gems")
-#set(AR2GEMS_BUILD_DIR "c:/code-dev/ar2gems/ar2gems-msvc11-x64")
-
-
-set(AR2GEMS_RELEASE_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Release)
-set(AR2GEMS_DEBUG_LIB_DIR ${AR2GEMS_BUILD_DIR}/lib/Debug)
-
-#Could first check is the env. variable AR2GEMS_PLUGINS_DIR is set
-set(AR2GEMS_RELEASE_PLUGINS_DIR c:/code-dev/ar2gems/ar2gems-msvc11-x64/lib/Release/plugins/Geostat)
-set(AR2GEMS_DEBUG_PLUGINS_DIR c:/code-dev/ar2gems/ar2gems-msvc11-x64/lib/Debug/plugins/Geostat)
 
 
 ### Enabling Boost ###################################################
-set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010")
 FIND_PACKAGE(Boost REQUIRED )
 # Uncomment if Boost isn't in your path:
 set(Boost_NO_SYSTEM_PATHS TRUE)
@@ -94,11 +76,6 @@ elseif(MSVC)
   # customize flags for Visual Studio
 endif()
 
-set(BUILD_SHARED_LIBS TRUE)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
-
 ### Enabling Qt4 #####################################################
 find_package(Qt4 REQUIRED COMPONENTS
              QtCore QtGui QtXml QtSvg QtDesigner QtUiTools)
@@ -109,7 +86,7 @@ endif()
 
 ### Enabling VTK #####################################################
 #find_package(VTK REQUIRED)
-find_package(VTK COMPONENTS
+find_package(VTK COMPONENTS REQUIRED
   vtkCommonCore
   vtkFiltersSources
   vtkRenderingCore
@@ -137,65 +114,6 @@ if(PYTHONLIBS_FOUND)
   include_directories(${PYTHON_INCLUDE_DIR})
 endif()
 
-### Enabling Eigen ###################################################
-include_directories(${CMAKE_SOURCE_DIR})
-
-### Enabling GsTL ####################################################
-include_directories(${AR2GEMS_DIR}/ar2GsTL)
-
-### Includes prefixed with the directory name ########################
-# The convention is to prefix the subdirectory (e.g. utils/foo.h) when
-# referring to headers.
-include_directories(${AR2GEMS_DIR}/ar2gems)
-include_directories(${AR2GEMS_BUILD_DIR}/ar2gems)
-
-
-### UI files in binary directory #####################################
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-if ( MSVC )
-	#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${AR2GEMS_DIR}/lib/x64/release/plugins/Geostat )
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_PLUGINS_DIR}/lib/x64/debug/plugins/Geostat )
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_PLUGINS_DIR}/lib/x64/release/plugins/Geostat )
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_PLUGINS_DIR}/lib/x64/debug/plugins/Geostat )
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_PLUGINS_DIR}/lib/x64/release/plugins/Geostat )	
-
-  #  set_target_properties( ${targetname} PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY ${AR2GEMS_DIR}/lib/x64/release/plugins/geostat )
-  #  set_target_properties( ${targetname} PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_DIR}/lib/x64/debug/plugins/geostat )
-  #  set_target_properties( ${targetname} PROPERTIES CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_DIR}/lib/x64/release/plugins/geostat )
-    # etc for the other available configuration types (MinSizeRel, RelWithDebInfo)
-endif ( MSVC )
-### Project tree #####################################################
-#set(PROJ_DIRS
-#  actions appli charts filters geostat grid gui
-#  main math qtplugins qwt utils widget_accessor
-#)
-
-foreach(dir ${PROJ_DIRS})
-  add_subdirectory(${dir})
-endforeach()
-
-# Should have a flag to see of these library are needed or not
-# such that the user could select them in cmake-gui
-set(AR2GEMS_LIB_RELEASE 
-	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_appli.lib
-	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_grid.lib
-	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_math.lib
-	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_widgets.lib
-	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_utils.lib
-	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_charts.lib
-	${AR2GEMS_RELEASE_LIB_DIR}/ar2gems_geostat.lib
-)
-set(AR2GEMS_LIB_DEBUG 
-	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_appli.lib
-	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_grid.lib
-	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_math.lib
-	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_widgets.lib
-	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_utils.lib
-	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_charts.lib
-	${AR2GEMS_DEBUG_LIB_DIR}/ar2gems_geostat.lib
-)
-
 
 # Process all headers with Q_OBJECT
 QT4_WRAP_CPP(plugins_demo_MOC
@@ -203,12 +121,8 @@ QT4_WRAP_CPP(plugins_demo_MOC
   pie_chart.h
 )
 
-#QT4_WRAP_UI(plugins_demo_FORMS
-#  chart_display_control.ui
-#)
-
 ## File to compile
-add_library(plugins_demo
+add_library(plugins_demo SHARED
   add_property_action.cpp
   add_property_action.h
   multiply_property_action.cpp
@@ -225,15 +139,12 @@ add_library(plugins_demo
 #  ${plugins_demo_FORMS}
 )
 
-INSTALL(TARGETS plugins_demo DESTINATION "${INSTALL_DIR_LIB}")
-
-
 target_link_libraries(plugins_demo
   ${QT_LIBRARIES}
   ${VTK_LIBRARIES}
-  general ${AR2GEMS_LIB_RELEASE}
-  optimized ${AR2GEMS_LIB_RELEASE}
-  debug ${AR2GEMS_LIB_DEBUG}    
+  general ${AR2GEMS_LIBRARIES}
+  optimized ${AR2GEMS_LIBRARIES}
+  debug ${AR2GEMS_LIBRARIES}    
 #  ar2gems_appli
 #  ar2gems_grid
 #  ar2gems_math
@@ -249,6 +160,7 @@ endif()
 
 
 
+INSTALL(TARGETS plugins_demo DESTINATION "${INSTALL_LIB_DIR}")
 
    
 # CREATE PACKAGE    
@@ -287,7 +199,11 @@ if (ALLOW_BUILD_PACKAGE)
 	    
 		set(CPACK_PACKAGE_FILE_NAME "plugin")
 		set(CPACK_NSIS_INSTALLER_OUTFILE_NAME ${CPACK_PACKAGE_FILE_NAME})
-    	     
+    	 
+        #pass NATIVE PATHS to NSIS template
+		string(REPLACE "/" "\\\\" WINNATIVE_PACKAGEL_LIB_DIR ${PACKAGEL_LIB_DIR})
+	    set(CPACK_NSIS_AR2GEMS_PLUGIN_BINARY_DIR ${WINNATIVE_PACKAGEL_LIB_DIR})
+            
 	endif (APPLE)
     
     INCLUDE(CPack)
