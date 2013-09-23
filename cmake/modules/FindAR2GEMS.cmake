@@ -1,5 +1,6 @@
 # This module will first look into the directories defined by the variables:
-# - AR2GEMS_PATH
+# 1) AR2GEMS_PATH
+# 2) AR2GEMS_SOURCE_PATH and AR2GEMS_BUILD_PATH 
 
 # AR2GEMS_FOUND - System has AR2GEMS
 # AR2GEMS_INCLUDE_DIRS - The AR2GEMS include directories
@@ -15,8 +16,10 @@ set (AR2GEMSFIND_DEBUG TRUE)  # print debug info
 set (AR2GEMS_ALL_LIBS_FOUND TRUE) # internal flag to check if all required libs are found, if atleast one missing this flag set to FALSE
 
 if (WIN32)
-    GET_FILENAME_COMPONENT(AR2GEMS_WINREGISTRY_PATH "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SGeMS-ar2Tech-beta-x64;Path]"
-            ABSOLUTE CACHE)
+    if (NOT AR2GEMS_SOURCE_PATH AND NOT AR2GEMS_BUILD_PATH)
+        GET_FILENAME_COMPONENT(AR2GEMS_WINREGISTRY_PATH "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SGeMS-ar2Tech-beta-x64;Path]"
+                ABSOLUTE CACHE)
+    endif (NOT AR2GEMS_SOURCE_PATH AND NOT AR2GEMS_BUILD_PATH)
 endif(WIN32)
 
 if (APPLE)
@@ -48,6 +51,8 @@ ar2gems_widgets
 
 set(LIB_SEARCH_PATHES
 ${AR2GEMS_PATH}
+${AR2GEMS_BUILD_PATH}/${CMAKE_BUILD_TYPE}/lib/                    # UNIX
+${AR2GEMS_BUILD_PATH}/${CMAKE_BUILD_TYPE}/lib/${CMAKE_BUILD_TYPE} # VS2010
 ${AR2GEMS_WINREGISTRY_PATH}
 /usr/lib64
 /usr/lib
@@ -58,6 +63,7 @@ ${AR2GEMS_WINREGISTRY_PATH}
 )
 
 set(HEADER_SEARCH_PATHES
+${AR2GEMS_SOURCE_PATH}/
 ${AR2GEMS_PATH}/include/
 ${AR2GEMS_WINREGISTRY_PATH}/include/
 /usr/include

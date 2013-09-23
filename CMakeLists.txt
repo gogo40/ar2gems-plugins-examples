@@ -7,11 +7,19 @@ project(demo-plugins)
 # work out of the box.
 ######################################################################
 
-set(ALLOW_BUILD_PACKAGE 1)
+if( NOT CMAKE_BUILD_TYPE )
+  set( CMAKE_BUILD_TYPE Release CACHE STRING
+       "Choose the type of build, options are: Debug Release"
+       FORCE )
+endif()
+
+set(ALLOW_BUILD_PACKAGE 0 CACHE TYPE BOOL)
 if (WIN32)
-    set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010")
-    set(VTK_DIR "D:/workspace/VTK-master/build")
-    #set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64") # if commented the searching happens by registry information
+    set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010" CACHE TYPE STRING)
+    set(VTK_DIR "D:/workspace/VTK-master/build" CACHE TYPE STRING)
+    #set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64" CACHE TYPE STRING) # if commented the searching happens by registry information
+    set(AR2GEMS_SOURCE_PATH "d:/workspace/ar2gems" CACHE TYPE STRING)
+    set(AR2GEMS_BUILD_PATH "d:/workspace/ar2gems_build" CACHE TYPE STRING)
 endif(WIN32)
 
 # SET RELEVANT VARS FOR PACKAGE
@@ -42,7 +50,6 @@ elseif (WIN32)
 endif (APPLE)
 
 
-set(CMAKE_BUILD_TYPE Release) # Debug, Release, RelWithDebInfo or MinSizeRel
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 find_package(AR2GEMS REQUIRED)
@@ -51,7 +58,12 @@ if (AR2GEMS_FOUND)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2gems)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2GsTL)
 endif (AR2GEMS_FOUND)
-  
+
+if (AR2GEMS_BUILD_PATH)
+    #include automatic generated ui_*.h headers
+	include_directories(${AR2GEMS_BUILD_PATH}/ar2gems)
+endif (AR2GEMS_BUILD_PATH)
+
 include_directories()
      
 
