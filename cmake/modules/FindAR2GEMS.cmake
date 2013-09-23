@@ -14,10 +14,10 @@ set (AR2GEMSFIND_DEBUG TRUE)  # print debug info
 
 set (AR2GEMS_ALL_LIBS_FOUND TRUE) # internal flag to check if all required libs are found, if atleast one missing this flag set to FALSE
 
-if (NOT AR2GEMS_PATH)
-    GET_FILENAME_COMPONENT(AR2GEMS_PATH "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SGeMS-ar2Tech-beta-x64;Path]"
-        ABSOLUTE CACHE)
-endif()
+if (WIN32)
+    GET_FILENAME_COMPONENT(AR2GEMS_WINREGISTRY_PATH "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SGeMS-ar2Tech-beta-x64;Path]"
+            ABSOLUTE CACHE)
+endif(WIN32)
 
 if (APPLE)
 	# ???
@@ -48,6 +48,7 @@ ar2gems_widgets
 
 set(LIB_SEARCH_PATHES
 ${AR2GEMS_PATH}
+${AR2GEMS_WINREGISTRY_PATH}
 /usr/lib64
 /usr/lib
 /usr/local/lib64
@@ -58,6 +59,7 @@ ${AR2GEMS_PATH}
 
 set(HEADER_SEARCH_PATHES
 ${AR2GEMS_PATH}/include/
+${AR2GEMS_WINREGISTRY_PATH}/include/
 /usr/include
 /usr/local/include
 /sw/include
@@ -68,6 +70,7 @@ ${AR2GEMS_PATH}/include/
 MACRO(FindAR2GEMS)
     if (AR2GEMSFIND_DEBUG)
         message(STATUS "AR2GEMS path: ${AR2GEMS_PATH}")
+        message(STATUS "AR2GEMS winregistry path: ${AR2GEMS_WINREGISTRY_PATH}")
     endif ()
     
     find_path(AR2GEMS_INCLUDE_DIR ar2gems/sgems_version.h

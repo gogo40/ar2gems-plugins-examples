@@ -8,8 +8,11 @@ project(demo-plugins)
 ######################################################################
 
 set(ALLOW_BUILD_PACKAGE 1)
-set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010")
-set(VTK_DIR "D:/workspace/VTK-master/build")
+if (WIN32)
+    set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010")
+    set(VTK_DIR "D:/workspace/VTK-master/build")
+    #set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64") # if commented the searching happens by registry information
+endif(WIN32)
 
 # SET RELEVANT VARS FOR PACKAGE
 if (ALLOW_BUILD_PACKAGE)
@@ -42,7 +45,6 @@ endif (APPLE)
 set(CMAKE_BUILD_TYPE Release) # Debug, Release, RelWithDebInfo or MinSizeRel
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
-set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64") # if not set then search in registry is enabled
 find_package(AR2GEMS REQUIRED)
 FindAR2GEMS()
 if (AR2GEMS_FOUND)
@@ -180,18 +182,18 @@ if (ALLOW_BUILD_PACKAGE)
 	if (APPLE)
 	    # ...
 	elseif (UNIX)
-	    ## DEB SPECIFIC
-	    #if (PACKAGE_TYPE STREQUAL "DEB")
-	        #SET(CPACK_GENERATOR "DEB")
-	        #SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # autogenerate dependency information (package d-shlibs should be installed)
-	        #SET(CPACK_DEBIAN_PACKAGE_DEPENDS "vtk (>= 6.1), libboost-system1.49.0 (>= 1.49.0)")
-	    #endif (PACKAGE_TYPE STREQUAL "DEB")
+	    # DEB SPECIFIC
+	    if (PACKAGE_TYPE STREQUAL "DEB")
+	        SET(CPACK_GENERATOR "DEB")
+	        SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # autogenerate dependency information (package d-shlibs should be installed)
+	        SET(CPACK_DEBIAN_PACKAGE_DEPENDS "ar2gems (>= 1.0.0)")
+	    endif (PACKAGE_TYPE STREQUAL "DEB")
 	    
-	    ## RPM SPECIFIC
-	    #if (PACKAGE_TYPE STREQUAL "RPM")
-	        #SET(CPACK_GENERATOR "RPM")
+	    # RPM SPECIFIC
+	    if (PACKAGE_TYPE STREQUAL "RPM")
+	        SET(CPACK_GENERATOR "RPM")
 	    
-	    #endif(PACKAGE_TYPE STREQUAL "RPM")
+	    endif(PACKAGE_TYPE STREQUAL "RPM")
 	              
 	elseif (WIN32)
 		set(CPACK_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
