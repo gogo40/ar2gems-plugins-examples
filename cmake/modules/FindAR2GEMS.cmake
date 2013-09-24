@@ -11,7 +11,7 @@
 include (FindPackageHandleStandardArgs)
 include (FindPackageMessage)
 
-set (AR2GEMSFIND_DEBUG TRUE)  # print debug info
+set (FINDAR2GEMS_DEBUG FALSE)  # print debug info
 
 set (AR2GEMS_ALL_LIBS_FOUND TRUE) # internal flag to check if all required libs are found, if atleast one missing this flag set to FALSE
 
@@ -51,7 +51,7 @@ ar2gems_widgets
 
 set(LIB_SEARCH_PATHES
 ${AR2GEMS_PATH}
-${AR2GEMS_BUILD_PATH}/${CMAKE_BUILD_TYPE}/lib/                    # UNIX
+${AR2GEMS_BUILD_PATH}/${CMAKE_BUILD_TYPE}/lib                     # UNIX
 ${AR2GEMS_BUILD_PATH}/${CMAKE_BUILD_TYPE}/lib/${CMAKE_BUILD_TYPE} # VS2010
 ${AR2GEMS_WINREGISTRY_PATH}
 /usr/lib64
@@ -74,13 +74,13 @@ ${AR2GEMS_WINREGISTRY_PATH}/include/
     
         
 MACRO(FindAR2GEMS)
-    if (AR2GEMSFIND_DEBUG)
+    if (FINDAR2GEMS_DEBUG)
         message(STATUS "AR2GEMS path: ${AR2GEMS_PATH}")
         message(STATUS "AR2GEMS winregistry path: ${AR2GEMS_WINREGISTRY_PATH}")
     endif ()
     
     find_path(AR2GEMS_INCLUDE_DIR ar2gems/sgems_version.h
-        ${HEADER_SEARCH_PATHES}
+        ${HEADER_SEARCH_PATHES} NO_DEFAULT_PATH
         DOC "The directory where ar2gems/sgems_version.h resides")
     list(APPEND AR2GEMS_INCLUDE_DIRS ${AR2GEMS_INCLUDE_DIR})
     
@@ -91,17 +91,19 @@ MACRO(FindAR2GEMS)
     #message("${AR2GEMS_INCLUDE_DIR}")        
     #list(APPEND AR2GEMS_INCLUDE_DIRS ${AR2GEMS_INCLUDE_DIR})
                   
-    if (AR2GEMSFIND_DEBUG)
+    if (FINDAR2GEMS_DEBUG)
         message("includes: ${AR2GEMS_INCLUDE_DIRS}")
-    endif(AR2GEMSFIND_DEBUG)
+    endif(FINDAR2GEMS_DEBUG)
                         
     foreach(LIB ${LIB_NAMES})
-        find_library(FOUND_${LIB} ${LIB} PATHS ${LIB_SEARCH_PATHES})
-        if (AR2GEMSFIND_DEBUG)
-            message("Lib: ${FOUND_${LIB}}")
-            list(APPEND AR2GEMS_LIBRARIES ${FOUND_${LIB}})
-        endif(AR2GEMSFIND_DEBUG)
+        find_library(FOUND_${LIB} ${LIB} 
+            PATHS ${LIB_SEARCH_PATHES} NO_DEFAULT_PATH)
         
+        list(APPEND AR2GEMS_LIBRARIES ${FOUND_${LIB}})
+        if (FINDAR2GEMS_DEBUG)
+            message("Lib: ${FOUND_${LIB}}")
+        endif(FINDAR2GEMS_DEBUG)
+                
         if (${LIB}-NOTFOUND)
             set(AR2GEMS_ALL_LIBS_FOUND FALSE)
             message("Lib not found: ${LIB}")
@@ -110,10 +112,8 @@ MACRO(FindAR2GEMS)
     
     if(AR2GEMS_INCLUDE_DIRS AND AR2GEMS_LIBRARIES AND AR2GEMS_ALL_LIBS_FOUND)
         set(AR2GEMS_FOUND TRUE)
-        if(AR2GEMSFIND_DEBUG)
-            message(STATUS "Found AR2GEMS library ${AR2GEMS_LIBRARIES}")
-            message(STATUS "Found AR2GEMS includes ${AR2GEMS_INCLUDE_DIRS}")
-        endif(AR2GEMSFIND_DEBUG)
+        message(STATUS "Found AR2GEMS library ${AR2GEMS_LIBRARIES}")
+        message(STATUS "Found AR2GEMS includes ${AR2GEMS_INCLUDE_DIRS}")
     else()
         set(AR2GEMS_FOUND FALSE)
         message(STATUS "AR2GEMS not found. Specify AR2GEMS_PATH to locate it")

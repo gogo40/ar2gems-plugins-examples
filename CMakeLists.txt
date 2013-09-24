@@ -7,6 +7,7 @@ project(demo-plugins)
 # work out of the box.
 ######################################################################
 
+
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release CACHE STRING
        "Choose the type of build, options are: Debug Release"
@@ -14,13 +15,21 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 set(ALLOW_BUILD_PACKAGE 0 CACHE TYPE BOOL)
-if (WIN32)
+
+if (APPLE)
+     # ...
+elseif (UNIX)
+    #set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010" CACHE TYPE STRING)
+    #set(VTK_DIR "D:/workspace/VTK-master/build" CACHE TYPE STRING)
+    set(AR2GEMS_SOURCE_PATH "/home/1balda/workspace/freelancejob/AlexSanto/ar2gems" CACHE TYPE STRING)
+    set(AR2GEMS_BUILD_PATH "/home/b1alda/workspace/freelancejob/AlexSanto/ar2gems_build" CACHE TYPE STRING)
+elseif (WIN32)
     set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010" CACHE TYPE STRING)
     set(VTK_DIR "D:/workspace/VTK-master/build" CACHE TYPE STRING)
     #set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64" CACHE TYPE STRING) # if commented the searching happens by registry information
     set(AR2GEMS_SOURCE_PATH "d:/workspace/ar2gems" CACHE TYPE STRING)
     set(AR2GEMS_BUILD_PATH "d:/workspace/ar2gems_build" CACHE TYPE STRING)
-endif(WIN32)
+endif (APPLE)
 
 # SET RELEVANT VARS FOR PACKAGE
 if (ALLOW_BUILD_PACKAGE)
