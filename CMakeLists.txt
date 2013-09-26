@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(demo-plugins)
+
+set(PROJECT_NAME plugin-demo)
+
+project(${PROJECT_NAME})
+
 
 ######################################################################
 # Please set the variables with your preferences. The defaults should
@@ -21,8 +25,8 @@ if (APPLE)
 elseif (UNIX)
     #set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010" CACHE TYPE STRING)
     #set(VTK_DIR "D:/workspace/VTK-master/build" CACHE TYPE STRING)
-    set(AR2GEMS_SOURCE_PATH "/home/1balda/workspace/freelancejob/AlexSanto/ar2gems" CACHE TYPE STRING)
-    set(AR2GEMS_BUILD_PATH "/home/b1alda/workspace/freelancejob/AlexSanto/ar2gems_build" CACHE TYPE STRING)
+    set(AR2GEMS_SOURCE_PATH "/home/balda/workspace/freelancejob/AlexSanto/ar2gems" CACHE TYPE STRING)
+    set(AR2GEMS_BUILD_PATH "/home/balda/workspace/freelancejob/AlexSanto/ar2gems_build" CACHE TYPE STRING)
 elseif (WIN32)
     set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010" CACHE TYPE STRING)
     set(VTK_DIR "D:/workspace/VTK-master/build" CACHE TYPE STRING)
@@ -52,10 +56,10 @@ endif (ALLOW_BUILD_PACKAGE)
 if (APPLE)
      # ...
 elseif (UNIX)
-    set(INSTALL_LIB_DIR "/usr/lib")
+    set(INSTALL_LIB_DIR "/usr/bin/plugins/${PROJECT_NAME}")
 elseif (WIN32)
-    SET(INSTALL_LIB_DIR "../../../../bin") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
-    SET(PACKAGEL_LIB_DIR "../../../bin") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
+    SET(INSTALL_LIB_DIR "../../../../plugins/${PROJECT_NAME}") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
+    SET(PACKAGEL_LIB_DIR "../../../plugins/${PROJECT_NAME}") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
 endif (APPLE)
 
 
@@ -66,6 +70,7 @@ FindAR2GEMS()
 if (AR2GEMS_FOUND)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2gems)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2GsTL)
+    include_directories(${AR2GEMS_INCLUDE_DIRS})
 endif (AR2GEMS_FOUND)
 
 if (AR2GEMS_BUILD_PATH)
@@ -139,13 +144,13 @@ endif()
 
 
 # Process all headers with Q_OBJECT
-QT4_WRAP_CPP(plugins_demo_MOC
+QT4_WRAP_CPP(${PROJECT_NAME}_MOC
   pie_chart_creator.h
   pie_chart.h
 )
 
 ## File to compile
-add_library(plugins_demo SHARED
+add_library(${PROJECT_NAME} SHARED
   add_property_action.cpp
   add_property_action.h
   multiply_property_action.cpp
@@ -158,11 +163,11 @@ add_library(plugins_demo SHARED
   local_high_values_algo.h
   library_init.cpp
   common.h
-  ${plugins_demo_MOC}
-#  ${plugins_demo_FORMS}
+  ${${PROJECT_NAME}_MOC}
+#  ${${PROJECT_NAME}_FORMS}
 )
 
-target_link_libraries(plugins_demo
+target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${VTK_LIBRARIES}
   general ${AR2GEMS_LIBRARIES}
@@ -175,7 +180,7 @@ target_link_libraries(plugins_demo
 #  ar2gems_utils
 )
 
-source_group(Qt FILES ${plugins_demo_MOC} )
+source_group(Qt FILES ${${PROJECT_NAME}_MOC} )
 
 if (WIN32)
   add_definitions(-DPLUGINS_DEMO_EXPORT)
@@ -183,7 +188,7 @@ endif()
 
 
 
-INSTALL(TARGETS plugins_demo DESTINATION "${INSTALL_LIB_DIR}")
+INSTALL(TARGETS ${PROJECT_NAME} DESTINATION "${INSTALL_LIB_DIR}")
 
    
 # CREATE PACKAGE    
@@ -220,7 +225,7 @@ if (ALLOW_BUILD_PACKAGE)
 		set(CPACK_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 	    set(CPACK_GENERATOR "NSIS")
 	    
-		set(CPACK_PACKAGE_FILE_NAME "plugin")
+		set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME})
 		set(CPACK_NSIS_INSTALLER_OUTFILE_NAME ${CPACK_PACKAGE_FILE_NAME})
     	 
         #pass NATIVE PATHS to NSIS template

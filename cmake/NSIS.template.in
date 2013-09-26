@@ -63,6 +63,9 @@ ShowUninstDetails hide
 
 # Installer sections
 Section "Main" SEC0000
+    StrCpy $0 "\plugins\${INSTALLER_OUTFILE_NAME}"
+    StrCpy $INSTDIR $INSTDIR$0
+    
     SetOutPath $INSTDIR
     SetOverwrite on
     ;File /r ${PYTHON27_DIR}\Lib\encodings\* 
