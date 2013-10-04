@@ -5,6 +5,9 @@
 
 Name ${INSTALLER_OUTFILE_NAME}
 
+!define SUBDIR_PLUGIN "\plugins\${INSTALLER_OUTFILE_NAME}"
+!define SUBDIR_GEOST "\plugins\Geostat"
+    
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
 
@@ -46,7 +49,6 @@ Var StartMenuGroup
 
 # Installer attributes
 OutFile ${INSTALLER_OUTFILE_NAME}.exe
-;InstallDir C:\data
 InstallDirRegKey HKLM "SOFTWARE\Wow6432Node\SGeMS-ar2Tech-beta-x64" "Path"
 CRCCheck on
 XPStyle on
@@ -63,15 +65,12 @@ ShowUninstDetails hide
 
 # Installer sections
 Section "Main" SEC0000
-    StrCpy $0 "\plugins\${INSTALLER_OUTFILE_NAME}"
-    StrCpy $INSTDIR $INSTDIR$0
-    
-    SetOutPath $INSTDIR
     SetOverwrite on
-    ;File /r ${PYTHON27_DIR}\Lib\encodings\* 
-     
-    File ${PLUGIN_BINARY_DIR}\*.dll
-    File ${PLUGIN_BINARY_DIR}\*.lib
+
+    SetOutPath $INSTDIR${SUBDIR_PLUGIN}     
+    File ${PLUGIN_BINARY_DIR}\${INSTALLER_OUTFILE_NAME}\*.dll
+    SetOutPath $INSTDIR${SUBDIR_GEOST} 
+    File /nonfatal ${PLUGIN_BINARY_DIR}\Geostat\*.dll
         
     ;WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
@@ -85,17 +84,17 @@ Section "post" SEC0001
     ;WriteRegExpandStr ${env_hkcu} GSTLAPPLIHOME $INSTDIR
    ; make sure windows knows about the change
     SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000    
-    WriteUninstaller $INSTDIR\uninstall.exe
+    WriteUninstaller $INSTDIR\${SUBDIR_PLUGIN}\uninstall.exe
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     SetOutPath $INSTDIR
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\sgems-x64.exe" "" "$INSTDIR\ar2gems_icon_256_256.ico"
-    CreateShortcut "$DESKTOP\$(^Name).lnk" "$INSTDIR\sgems-x64.exe" "" "$INSTDIR\ar2gems_icon_256_256.ico"
+    ;CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
+    ;CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" "$INSTDIR\sgems-x64.exe" "" "$INSTDIR\ar2gems_icon_256_256.ico"
+    ;CreateShortcut "$DESKTOP\$(^Name).lnk" "$INSTDIR\sgems-x64.exe" "" "$INSTDIR\ar2gems_icon_256_256.ico"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     ;WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
     ;WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" URLInfoAbout "${URL}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\uninstall.exe
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\{SUBDIR_PLUGIN}\uninstall.exe
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\${SUBDIR_PLUGIN}\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
 SectionEnd
@@ -126,16 +125,16 @@ Section "un.post" UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     DeleteRegValue ${env_hklm} GSTLAPPLIHOME
 
-    Delete $INSTDIR\*.dll
-    Delete $INSTDIR\*.lib
-        
-    Delete  $INSTDIR\uninstall.exe
+    Delete $INSTDIR\${SUBDIR_PLUGIN}\*.dll
+    Delete $INSTDIR\${SUBDIR_GEOST}\*.dll
+            
+    Delete  $INSTDIR\${SUBDIR_PLUGIN}\uninstall.exe
     
     DeleteRegValue HKLM "${REGKEY}" Path
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
-    RmDir /REBOOTOK $INSTDIR ; ???
+    RmDir /REBOOTOK $INSTDIR/${SUBDIR_PLUGIN} ;
 SectionEnd
 
 

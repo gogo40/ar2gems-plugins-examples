@@ -31,8 +31,8 @@ elseif (WIN32)
     set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010" CACHE TYPE STRING)
     set(VTK_DIR "D:/workspace/VTK-master/build" CACHE TYPE STRING)
     #set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64" CACHE TYPE STRING) # if commented the searching happens by registry information
-    set(AR2GEMS_SOURCE_PATH "d:/workspace/ar2gems" CACHE TYPE STRING)
-    set(AR2GEMS_BUILD_PATH "d:/workspace/ar2gems_build" CACHE TYPE STRING)
+    set(AR2GEMS_SOURCE_PATH "d:/workspace/ar2gems-dev" CACHE TYPE STRING)
+    set(AR2GEMS_BUILD_PATH "d:/workspace/ar2gems-dev_build" CACHE TYPE STRING)
 endif (APPLE)
 
 # SET RELEVANT VARS FOR PACKAGE
@@ -58,8 +58,10 @@ if (APPLE)
 elseif (UNIX)
     set(INSTALL_LIB_DIR "/usr/bin/plugins/${PROJECT_NAME}")
 elseif (WIN32)
-    SET(INSTALL_LIB_DIR "../../../../plugins/${PROJECT_NAME}") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
-    SET(PACKAGEL_LIB_DIR "../../../plugins/${PROJECT_NAME}") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
+    SET(INSTALL_LIB_DIR         "../../../../plugins/${PROJECT_NAME}") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
+    SET(INSTALL_GEOSTAT_LIB_DIR "../../../../plugins/Geostat") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
+    
+    SET(PACKAGE_DIR         "../../../plugins/") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
 endif (APPLE)
 
 
@@ -101,6 +103,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -O3 -march=native")
   set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -ggdb -march=native")
 elseif(MSVC)
+  set(CMAKE_CXX_FLAGS_RELEASE "/MP4")
   # customize flags for Visual Studio
 endif()
 
@@ -229,8 +232,8 @@ if (ALLOW_BUILD_PACKAGE)
 		set(CPACK_NSIS_INSTALLER_OUTFILE_NAME ${CPACK_PACKAGE_FILE_NAME})
     	 
         #pass NATIVE PATHS to NSIS template
-		string(REPLACE "/" "\\\\" WINNATIVE_PACKAGEL_LIB_DIR ${PACKAGEL_LIB_DIR})
-	    set(CPACK_NSIS_AR2GEMS_PLUGIN_BINARY_DIR ${WINNATIVE_PACKAGEL_LIB_DIR})
+		string(REPLACE "/" "\\\\" WINNATIVE_PACKAGE_DIR ${PACKAGE_DIR})
+	    set(CPACK_NSIS_AR2GEMS_PLUGIN_BINARY_DIR ${WINNATIVE_PACKAGE_DIR})
             
 	endif (APPLE)
     
