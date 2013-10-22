@@ -69,16 +69,16 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 find_package(AR2GEMS REQUIRED)
 FindAR2GEMS()
-if (AR2GEMS_FOUND)
+if (AR2GEMS_RELEASE_FOUND OR AR2GEMS_DEBUG_FOUND)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2gems)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2GsTL)
     include_directories(${AR2GEMS_INCLUDE_DIRS})
-endif (AR2GEMS_FOUND)
+endif ()
 
 if (AR2GEMS_BUILD_PATH)
     #include automatic generated ui_*.h headers
 	include_directories(${AR2GEMS_BUILD_PATH}/ar2gems)
-endif (AR2GEMS_BUILD_PATH)
+endif ()
 
 include_directories()
      
@@ -171,16 +171,10 @@ add_library(${PROJECT_NAME} SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}
+  optimized ${AR2GEMS_RELEASE_LIBRARIES}  
+  debug ${AR2GEMS_DEBUG_LIBRARIES} 
   ${QT_LIBRARIES}
   ${VTK_LIBRARIES}
-  general ${AR2GEMS_LIBRARIES}
-  optimized ${AR2GEMS_LIBRARIES}
-  debug ${AR2GEMS_LIBRARIES}    
-#  ar2gems_appli
-#  ar2gems_grid
-#  ar2gems_math
-#  ar2gems_widgets
-#  ar2gems_utils
 )
 
 source_group(Qt FILES ${${PROJECT_NAME}_MOC} )
