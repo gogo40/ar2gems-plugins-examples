@@ -28,11 +28,11 @@ elseif (UNIX)
     set(AR2GEMS_SOURCE_PATH "/home/balda/workspace/freelancejob/AlexSanto/ar2gems" CACHE TYPE STRING)
     set(AR2GEMS_BUILD_PATH "/home/balda/workspace/freelancejob/AlexSanto/ar2gems_build" CACHE TYPE STRING)
 elseif (WIN32)
-    set(BOOST_ROOT "E:/workspace/ar2externals/Boost/win64/release-V1.49.0-VC2010" CACHE TYPE STRING)
+    set(BOOST_ROOT "d:/release-V1.49.0-VC2010" CACHE TYPE STRING)
     set(VTK_DIR "D:/workspace/VTK-master/build" CACHE TYPE STRING)
     #set(AR2GEMS_PATH "c:/SGeMS-ar2tech-x64" CACHE TYPE STRING) # if commented the searching happens by registry information
-    set(AR2GEMS_SOURCE_PATH "d:/workspace/ar2gems-dev" CACHE TYPE STRING)
-    set(AR2GEMS_BUILD_PATH "d:/workspace/ar2gems-dev_build" CACHE TYPE STRING)
+    set(AR2GEMS_SOURCE_PATH "d:/workspace/ar2gems" CACHE TYPE STRING)
+    set(AR2GEMS_BUILD_PATH "d:/workspace/ar2gems_build" CACHE TYPE STRING)
 endif (APPLE)
 
 # SET RELEVANT VARS FOR PACKAGE
@@ -56,9 +56,9 @@ endif (ALLOW_BUILD_PACKAGE)
 if (APPLE)
      # ...
 elseif (UNIX)
-    set(INSTALL_LIB_DIR "/usr/bin/plugins/${PROJECT_NAME}")
+    set(INSTALL_LIB_DIR "/usr/bin/plugins/designer")
 elseif (WIN32)
-    SET(INSTALL_LIB_DIR         "../../../../plugins/${PROJECT_NAME}") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
+    SET(INSTALL_LIB_DIR         "../../../../plugins/designer") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
     SET(INSTALL_GEOSTAT_LIB_DIR "../../../../plugins/Geostat") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
     
     SET(PACKAGE_DIR         "../../../plugins/") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
@@ -69,7 +69,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 find_package(AR2GEMS REQUIRED)
 FindAR2GEMS()
-if (AR2GEMS_RELEASE_FOUND OR AR2GEMS_DEBUG_FOUND)
+if (AR2GEMS_FOUND)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2gems)
 	include_directories(${AR2GEMS_INCLUDE_DIRS}/ar2GsTL)
     include_directories(${AR2GEMS_INCLUDE_DIRS})
@@ -171,8 +171,7 @@ add_library(${PROJECT_NAME} SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}
-  optimized ${AR2GEMS_RELEASE_LIBRARIES}  
-  debug ${AR2GEMS_DEBUG_LIBRARIES} 
+  ${AR2GEMS_LIBRARIES}
   ${QT_LIBRARIES}
   ${VTK_LIBRARIES}
 )

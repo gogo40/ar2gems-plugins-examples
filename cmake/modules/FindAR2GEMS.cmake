@@ -1,13 +1,15 @@
 # This module will first look into the directories defined by the variables:
-# 1) AR2GEMS_PATH
-# 2) AR2GEMS_SOURCE_PATH and AR2GEMS_BUILD_PATH 
-
-# AR2GEMS_RELEASE_FOUND - System has AR2GEMS
-# AR2GEMS_DEBUG_FOUND - System has AR2GEMS
+# 1) AR2GEMS_SOURCE_PATH and AR2GEMS_BUILD_PATH 
+# 2) windows ar2gems location  in registry
+# 
+# AR2GEMS_LIBRARIES    - ar2gems libraries to link
 # AR2GEMS_INCLUDE_DIRS - The AR2GEMS include directories
-# AR2GEMS_RELEASE_LIBRARIES - The libraries needed to use AR2GEMS
-# AR2GEMS_DEBUG_LIBRARIES - The libraries needed to use AR2GEMS
-# AR2GEMS_DEFINITIONS - Compiler switches required for using AR2GEMS
+#
+# AR2GEMS_RELEASE_FOUND     - System has AR2GEMS
+# AR2GEMS_DEBUG_FOUND       - System has AR2GEMS
+# AR2GEMS_FOUND             - at least one (debug or release) libraries set found
+# AR2GEMS_RELEASE_LIBRARIES - The release libraries
+# AR2GEMS_DEBUG_LIBRARIES   - The debug libraries
 
 # Other standarnd issue macros
 include (FindPackageHandleStandardArgs)
@@ -70,7 +72,6 @@ set(LIB_NAMES_DEBUG
 
 
 set(LIB_RELEASE_SEARCH_PATHES
-#${AR2GEMS_PATH}
 ${AR2GEMS_BUILD_PATH}/Release/lib # UNIX
 ${AR2GEMS_BUILD_PATH}/lib/Release # VS2010
 ${AR2GEMS_WINREGISTRY_PATH}
@@ -83,7 +84,6 @@ ${AR2GEMS_WINREGISTRY_PATH}
 )
 
 set(LIB_DEBUG_SEARCH_PATHES
-#${AR2GEMS_PATH}
 ${AR2GEMS_BUILD_PATH}/Debug/lib # UNIX
 ${AR2GEMS_BUILD_PATH}/lib/Debug # VS2010
 ${AR2GEMS_WINREGISTRY_PATH}
@@ -134,7 +134,8 @@ MACRO(FindAR2GEMS)
             set(AR2GEMS_ALL_RELEASE_LIBS_FOUND FALSE)
             message("Release lib NOT found: ${RELEASE_LIB}")
         else()
-            list(APPEND AR2GEMS_RELEASE_LIBRARIES ${SEARCH_${RELEASE_LIB}})        
+            list(APPEND AR2GEMS_RELEASE_LIBRARIES ${SEARCH_${RELEASE_LIB}})  
+            list(APPEND AR2GEMS_LIBRARIES optimized ${SEARCH_${RELEASE_LIB}})        
         endif ()
     endforeach()  
 
@@ -152,6 +153,7 @@ MACRO(FindAR2GEMS)
             message("Debug lib NOT found: ${DEBUG_LIB}")
         else()
             list(APPEND AR2GEMS_DEBUG_LIBRARIES ${SEARCH_${DEBUG_LIB}})
+            list(APPEND AR2GEMS_LIBRARIES debug ${SEARCH_${DEBUG_LIB}})
         endif ()
     endforeach() 
         
@@ -161,7 +163,7 @@ MACRO(FindAR2GEMS)
         message(STATUS "Found Release AR2GEMS includes ${AR2GEMS_INCLUDE_DIRS}")
     else()
         set(AR2GEMS_RELEASE_FOUND FALSE)
-        message(STATUS "Release AR2GEMS not found. Specify AR2GEMS_PATH to locate it")
+        message(STATUS "Release AR2GEMS not found. Specify AR2GEMS_BUILD_PATH (needed for lib) and AR2GEMS_SOURCE_PATH (needed for headers) to locate it")
     endif()
 
     if(AR2GEMS_INCLUDE_DIRS AND AR2GEMS_ALL_DEBUG_LIBS_FOUND)
@@ -170,7 +172,14 @@ MACRO(FindAR2GEMS)
         message(STATUS "Found Debug AR2GEMS includes ${AR2GEMS_INCLUDE_DIRS}")
     else()    
         set(AR2GEMS_DEBUG_FOUND FALSE)
-        message(STATUS "Debug AR2GEMS not found. Specify AR2GEMS_PATH to locate it")    
+        message(STATUS "Debug AR2GEMS not found. Specify AR2GEMS_BUILD_PATH (needed for lib) and AR2GEMS_SOURCE_PATH (needed for headers) to locate it")   
     endif()
+    
+    if (AR2GEMS_RELEASE_FOUND OR AR2GEMS_DEBUG_FOUND)
+		set(AR2GEMS_FOUND TRUE)
+	else()
+		set(AR2GEMS_FOUND FALSE)
+	endif()	
+    
 ENDMACRO()
 
