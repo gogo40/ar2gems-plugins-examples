@@ -5,7 +5,6 @@
 
 #include "common.h"
 
-#include <common.h>
 #include <appli/action.h> 
 #include <grid/grid_property.h>
 #include <grid/geostat_grid.h>
