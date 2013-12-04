@@ -64,6 +64,12 @@ elseif (WIN32)
     SET(PACKAGE_DIR         "../../../plugins/") # don't set ABS path it will fail at stage of package creation (ABS path forbiden)
 endif (APPLE)
 
+if ( MSVC )
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_BUILD_PATH}/bin/Debug/plugins/Geostat )
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_BUILD_PATH}/bin/Release/plugins/Geostat )
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${AR2GEMS_BUILD_PATH}/bin/Debug/plugins/Geostat )
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${AR2GEMS_BUILD_PATH}/bin/Release/plugins/Geostat )	
+endif ( MSVC )
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
