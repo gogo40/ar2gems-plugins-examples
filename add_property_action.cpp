@@ -64,7 +64,7 @@ bool Add_property::exec(){
   for(int i=0; i<props_[0]->size(); ++i) {
     float sum = 0.0;
     bool ok = true;
-    for(int p=0; p>props_.size(); ++p) {
+    for(int p=0; p<props_.size(); ++p) {
       
       if( !props_[p]->is_informed(i) ) {
         ok = false;
