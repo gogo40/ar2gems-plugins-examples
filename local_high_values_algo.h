@@ -18,8 +18,8 @@ public:
 	virtual ~Local_high_values();
 
 	  virtual bool initialize( const Parameters_handler* parameters,
-				   Error_messages_handler* errors );
-	  virtual int execute( GsTL_project* proj=0 );
+				   Error_messages_handler* errors = 0, Progress_notifier* notifier = 0 );
+	  virtual int execute( GsTL_project* proj=0, Progress_notifier* notifier = 0 );
 	  virtual std::string name() const { return "local_high_values"; }
 
 	 public:

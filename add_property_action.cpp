@@ -10,7 +10,7 @@ Named_interface* Add_property::create_new_interface( std::string& ){
 
 // format gridName::NewNameSum::prop1::prop2[::prop3::propN]
 bool Add_property::init( std::string& parameters, GsTL_project* proj,
-                     Error_messages_handler* errors )
+                     Error_messages_handler* errors, Progress_notifier* notifier )
 {
 
     std::vector< std::string > params = 
@@ -59,7 +59,7 @@ bool Add_property::init( std::string& parameters, GsTL_project* proj,
 }
 
 
-bool Add_property::exec(){
+bool Add_property::exec(Progress_notifier* notifier){
 
   for(int i=0; i<props_[0]->size(); ++i) {
     float sum = 0.0;

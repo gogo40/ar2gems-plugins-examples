@@ -10,7 +10,7 @@ Named_interface* Multiply_property::create_new_interface( std::string& ){
 
 // format gridName::NewNameSum::prop1::prop2[::prop3::propN]
 bool Multiply_property::init( std::string& parameters, GsTL_project* proj,
-                     Error_messages_handler* errors )
+                     Error_messages_handler* errors, Progress_notifier* notifier)
 {
 
     std::vector< std::string > params = 
@@ -59,7 +59,7 @@ bool Multiply_property::init( std::string& parameters, GsTL_project* proj,
 }
 
 
-bool Multiply_property::exec(){
+bool Multiply_property::exec(Progress_notifier* notifier){
 
   for(int i=0; i<props_[0]->size(); ++i) {
     float prod = 1.0;

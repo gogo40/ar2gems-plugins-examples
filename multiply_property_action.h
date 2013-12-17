@@ -19,8 +19,8 @@ public:
 
   virtual ~Multiply_property() {} 
   virtual bool init( std::string& parameters, GsTL_project* proj,
-                     Error_messages_handler* errors ); 
-  virtual bool exec(); 
+                     Error_messages_handler* errors = 0, Progress_notifier* notifier = 0 ); 
+  virtual bool exec(Progress_notifier* notifier = 0); 
 
 private :
   Geostat_grid* grid_;
